@@ -129,7 +129,7 @@ router.delete('/:id', (req, res) => {
   })
     .then((products) => {
       res.json(products)
-      res.status(400).json(err)
+      // res.status(400).json(err)
     })
     .catch((err) => {
       res.status(400).json(err)
