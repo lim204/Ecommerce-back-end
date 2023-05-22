@@ -3,19 +3,50 @@ const { Product, Category, Tag, ProductTag } = require('../../models');
 
 // The `/api/products` endpoint
 
-// get all products
+// get all products newcomments
 router.get('/', (req, res) => {
   // find all products
-  // be sure to include its associated Category and Tag data
+  // be sure to include its associated Category and Tag data - new comments
+  Product.findAll({
+    include: [
+      Category, {
+        model: Tag,
+        through: ProductTag,
+      },
+    ]
+  })
+    .then((products) => res.json(products))
+    .catch((err) => {
+      console.log(err)
+      res.status(500).json(err)
+    })
+
 });
 
-// get one product
+// get one product newcomments
 router.get('/:id', (req, res) => {
   // find a single product by its `id`
-  // be sure to include its associated Category and Tag data
+  // be sure to include its associated Category and Tag data - new comments
+  Product.findOne({
+    where: {
+      id: req.params.id,
+    },
+    include: [
+      Category,
+      {
+        model: Tag,
+        through: ProductTag,
+      }
+    ],
+  })
+    .then((products) => res.json(products))
+    .catch((err) => {
+      console.log(err)
+      res.status(400).json(err)
+    })
 });
 
-// create new product
+// create new product 
 router.post('/', (req, res) => {
   /* req.body should look like this...
     {
@@ -90,7 +121,19 @@ router.put('/:id', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
-  // delete one product by its `id` value
+  // delete one product by its `id` value newcomments - new comments
+  Product.destroy({
+    where: {
+      id: req.params.id,
+    },
+  })
+    .then((products) => {
+      res.json(products)
+      res.status(400).json(err)
+    })
+    .catch((err) => {
+      res.status(400).json(err)
+    })
 });
 
 module.exports = router;
