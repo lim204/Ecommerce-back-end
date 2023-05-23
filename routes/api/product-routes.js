@@ -79,43 +79,53 @@ router.post('/', (req, res) => {
 });
 
 // update product
+// update product working with tagids or no
 router.put('/:id', (req, res) => {
-  // update product data
+  // update product data 
   Product.update(req.body, {
     where: {
       id: req.params.id,
     },
   })
-    .then((product) => {
-      // find all associated tags from ProductTag
-      return ProductTag.findAll({ where: { product_id: req.params.id } });
-    })
-    .then((productTags) => {
-      // get list of current tag_ids
-      const productTagIds = productTags.map(({ tag_id }) => tag_id);
-      // create filtered list of new tag_ids
-      const newProductTags = req.body.tagIds
-        .filter((tag_id) => !productTagIds.includes(tag_id))
-        .map((tag_id) => {
-          return {
-            product_id: req.params.id,
-            tag_id,
-          };
+    .then(async () => {
+      // check if array of products tagIds were sent
+      if (req.body.tagIds && req.body.tagIds.length) {
+        // Find all of the tags for the product
+        const productTags = await ProductTag.findAll({
+          where: { product_id: req.params.id }
         });
-      // figure out which ones to remove
-      const productTagsToRemove = productTags
-        .filter(({ tag_id }) => !req.body.tagIds.includes(tag_id))
-        .map(({ id }) => id);
+        // transform the product tag data
+        const productTagIds = productTags.map(({ tag_id }) => tag_id);
 
-      // run both actions
-      return Promise.all([
-        ProductTag.destroy({ where: { id: productTagsToRemove } }),
-        ProductTag.bulkCreate(newProductTags),
-      ]);
+        /* When updating product tags, the array sent over may contain new tag_ids 
+           and it may also be void of tag_ids that used to be there.
+           We have to account for both situations:  */
+
+        // create filtered list of new tag_ids
+        const newProductTags = req.body.tagIds
+          // filter where the tag_ids coming over are not already in the current tag list
+          .filter((tag_id) => !productTagIds.includes(tag_id))
+          .map((tag_id) => {
+            return {
+              product_id: req.params.id,
+              tag_id,
+            };
+          });
+        // figure out which ones to remove
+        const productTagsToRemove = productTags
+          // filter where the current tag list has tags that are not present in the new tag list coming over
+          .filter(({ tag_id }) => !req.body.tagIds.includes(tag_id))
+          .map(({ id }) => id);
+        // run both actions asynchronously
+        Promise.all([
+          ProductTag.destroy({ where: { id: productTagsToRemove } }),
+          ProductTag.bulkCreate(newProductTags),
+        ]);
+        return res.json("Successfully updated with updated product tags")
+      }
+      return res.json("Successfully updated (no product tags included)");
     })
-    .then((updatedProductTags) => res.json(updatedProductTags))
     .catch((err) => {
-      // console.log(err);
       res.status(400).json(err);
     });
 });
@@ -129,7 +139,7 @@ router.delete('/:id', (req, res) => {
   })
     .then((products) => {
       res.json(products)
-      // res.status(400).json(err)
+      res.status(400).json(err)
     })
     .catch((err) => {
       res.status(400).json(err)
