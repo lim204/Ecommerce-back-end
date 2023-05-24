@@ -19,5 +19,5 @@ When I test API POST, PUT, and DELETE routes in Insomnia Core then I am able to 
 
  ## Credits
  UCLA edx bootmcamp ORM week activities
- Meg Meyer office hours
+ Office hours TA  Meg Meyer
 

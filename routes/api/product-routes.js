@@ -131,15 +131,15 @@ router.put('/:id', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
-  // delete one product by its `id` value newcomments - new comments
+  // delete one product by its `id` value - new comments
   Product.destroy({
     where: {
       id: req.params.id,
     },
   })
     .then((products) => {
+      console.log(products)
       res.json(products)
-      res.status(400).json(err)
     })
     .catch((err) => {
       res.status(400).json(err)
