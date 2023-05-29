@@ -2,7 +2,9 @@
 
 This is an express app that run the back en for an e-commerce site, allowing users to view all products,categories, and product tags. Users can update and delete products, categories and tags.
 
-# Link to video [walkthough]()
+# Link to video  part 1 [walkthrough](https://drive.google.com/file/d/1rRe34TUBuqP6VNWy9OpEpTx8ct5kSZl5/view)
+
+# Link to video  part 2 [walkthrough](https://drive.google.com/file/d/1SBOe3Nv3c0tnoZCfoI79zHsdEi5Q5c2i/view)
 
 ## Criteria:
 
